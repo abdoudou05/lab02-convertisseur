@@ -113,3 +113,46 @@ const csvCell = (value) => {
 /** Construit un document CSV à partir d'en-têtes et de lignes. */
 export const toCsv = (headers, rows) =>
   [headers, ...rows].map((row) => row.map(csvCell).join(';')).join('\r\n');
+
+/**
+ * Ajuste une valeur saisie d'un pas donné, pour les flèches haut et bas.
+ *
+ * L'arithmétique est menée sur des entiers mis à l'échelle plutôt que sur des
+ * flottants : « 0,3 » moins « 0,1 » doit donner « 0,2 », pas
+ * « 0,19999999999999998 ». Le nombre de décimales retenu est le plus grand
+ * entre celui de la valeur et celui du pas, ce qui garde une écriture stable
+ * pendant qu'on maintient la touche enfoncée.
+ *
+ * Le séparateur décimal de l'utilisateur est conservé : qui écrit « 1,5 »
+ * continue de voir des virgules.
+ *
+ * @returns {string|null} la nouvelle valeur, ou null si la saisie n'est pas un
+ *   nombre simple (une expression, par exemple, ne s'incrémente pas).
+ */
+const STEPPABLE = /^[+-]?(\d+([.,]\d*)?|[.,]\d+)$/;
+
+export function stepValue(text, step) {
+  const raw = String(text ?? '').trim();
+  const compact = (raw === '' ? '0' : raw).replace(/[\s   ']/g, '');
+  if (!STEPPABLE.test(compact)) return null;
+
+  const usesComma = compact.includes(',');
+  const canonical = compact.replace(',', '.');
+
+  const decimalsOf = (value) => (String(value).split('.')[1] ?? '').length;
+  const decimals = Math.max(decimalsOf(canonical), decimalsOf(step));
+  const scale = 10 ** decimals;
+
+  const scaledValue = Math.round(Number(canonical) * scale);
+  const scaledStep = Math.round(step * scale);
+
+  // Au-delà de l'entier sûr, la mise à l'échelle perdrait des chiffres :
+  // mieux vaut ne rien faire que renvoyer une valeur fausse.
+  if (!Number.isSafeInteger(scaledValue) || !Number.isSafeInteger(scaledStep)) return null;
+
+  const next = (scaledValue + scaledStep) / scale;
+  if (!Number.isFinite(next)) return null;
+
+  const rendered = next.toFixed(decimals);
+  return usesComma ? rendered.replace('.', ',') : rendered;
+}

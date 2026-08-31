@@ -30,10 +30,12 @@ Le serveur Node sert alors le bundle et l'API sur <http://localhost:4000>.
 ### Tests
 
 ```bash
-npm test
+npm test              # les deux suites
+npm run test:server   # moteur de conversion et API
+npm run test:client   # utilitaires numériques de l'interface
 ```
 
-119 tests couvrent les facteurs de conversion, les propriétés mathématiques du moteur, l'évaluateur d'expressions, la mise en forme et toutes les routes HTTP.
+140 tests couvrent les facteurs de conversion, les propriétés mathématiques du moteur, l'évaluateur d'expressions, la mise en forme, toutes les routes HTTP et les utilitaires numériques de l'interface.
 
 ---
 
@@ -63,6 +65,8 @@ Opérateurs `+ - * / ^`, parenthèses, signe unaire, constantes `pi` et `e`, fon
 L'évaluation se fait par découpage en jetons puis algorithme *shunting-yard* : **ni `eval`, ni `Function`**, aucune exécution de code.
 
 Les priorités suivent la convention mathématique : `-2^2` vaut `-4`, et `2^3^2` vaut `512`.
+
+Les flèches **haut** et **bas** ajustent la valeur sans quitter le clavier : d'une unité, de dix avec `Maj`, d'un dixième avec `Alt`. Le calcul se fait sur des entiers mis à l'échelle, donc `0,3` moins `0,1` donne bien `0,2` et non `0,19999999999999998`. Une expression n'est pas incrémentée : les flèches y gardent leur comportement habituel.
 
 ### Saisie bilingue
 
@@ -102,6 +106,7 @@ Un panneau complet, persisté dans le navigateur :
 | `S` | Inverser les unités |
 | `C` | Copier le résultat |
 | `/` | Aller au champ de saisie |
+| `↑` `↓` | Ajuster la valeur (`Maj` par 10, `Alt` par 0,1) |
 | `,` | Ouvrir les réglages |
 | `?` | Afficher les raccourcis |
 | `Échap` | Fermer |
@@ -130,19 +135,20 @@ Lab02-App/
 │   │       ├── format.js        Notation, arrondi, fractions, composition
 │   │       ├── expression.js    Évaluateur d'expressions
 │   │       └── catalogue.js     Sérialisation localisée
-│   └── test/                    119 tests (node:test)
+│   └── test/                    124 tests (node:test)
 │
 └── client/                      Frontend React + Material UI
-    └── src/
-        ├── main.jsx             Racine, thème, réglages
-        ├── App.jsx              Orchestration
-        ├── theme.js             Charte visuelle
-        ├── settings.js          Modèle de réglages
-        ├── api/                 Client HTTP
-        ├── hooks/               Catalogue, conversion, stockage local
-        ├── i18n/                Chaînes françaises et anglaises
-        ├── utils/               Mise en forme locale des nombres
-        └── components/          14 composants
+    ├── src/
+    │   ├── main.jsx             Racine, thème, réglages
+    │   ├── App.jsx              Orchestration
+    │   ├── theme.js             Charte visuelle
+    │   ├── settings.js          Modèle de réglages
+    │   ├── api/                 Client HTTP
+    │   ├── hooks/               Catalogue, conversion, stockage local
+    │   ├── i18n/                Chaînes françaises et anglaises
+    │   ├── utils/               Mise en forme locale des nombres
+    │   └── components/          14 composants
+    └── test/                    16 tests (node:test)
 ```
 
 ### Modèle de données

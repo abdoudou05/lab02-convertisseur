@@ -35,6 +35,7 @@ export function ShortcutsDialog({ open, onClose }) {
     { keys: ['S'], label: t.shortcutSwap },
     { keys: ['C'], label: t.shortcutCopy },
     { keys: ['/'], label: t.shortcutFocus },
+    { keys: ['↑', '↓'], label: t.shortcutStep },
     { keys: [','], label: t.shortcutSettings },
     { keys: ['?'], label: t.shortcuts },
     { keys: ['Esc'], label: t.shortcutClose },

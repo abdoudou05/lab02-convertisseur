@@ -16,7 +16,7 @@ import RestartAltIcon from '@mui/icons-material/RestartAlt';
 import { alpha } from '@mui/material/styles';
 
 import { useI18n } from '../i18n/I18nProvider.jsx';
-import { ACCENTS, DENSITIES, THEMES, DEFAULT_SETTINGS } from '../settings.js';
+import { ACCENTS, DENSITIES, THEMES } from '../settings.js';
 import { MONO } from '../theme.js';
 
 /** Une ligne de réglage : libellé à gauche, contrôle à droite. */
@@ -320,5 +320,3 @@ const ACCENT_SWATCH = {
   violet: '#6F3BE0',
   forest: '#2A8A4C',
 };
-
-export { DEFAULT_SETTINGS };

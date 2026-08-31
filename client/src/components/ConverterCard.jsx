@@ -22,8 +22,19 @@ import useMediaQuery from '@mui/material/useMediaQuery';
 import { UnitSelect } from './UnitSelect.jsx';
 import { NumericValue } from './NumericValue.jsx';
 import { useI18n } from '../i18n/I18nProvider.jsx';
-import { compositeText, formatNumberText } from '../utils/number.js';
+import { compositeText, formatNumberText, stepValue } from '../utils/number.js';
 import { MONO } from '../theme.js';
+
+/**
+ * Pas appliqué par les flèches haut et bas. Les modificateurs suivent la
+ * convention des tableurs et des outils de dessin : Maj pour avancer plus vite,
+ * Alt pour affiner.
+ */
+const stepFor = (event) => {
+  if (event.shiftKey) return 10;
+  if (event.altKey) return 0.1;
+  return 1;
+};
 
 /** Taille du nombre : large sur écran d'ordinateur, sans jamais déborder sur mobile. */
 const NUMBER_SIZE = { xs: '2.125rem', sm: '2.625rem', md: '3rem' };
@@ -126,14 +137,39 @@ export function ConverterCard({
             value={value}
             onChange={(event) => onValueChange(event.target.value)}
             placeholder="0"
+            /*
+              Le gestionnaire est posé dans inputProps, donc directement sur
+              l'element <input> : MUI ne transmet pas la prop onKeyDown de
+              l'InputBase jusqu'a lui.
+            */
             inputProps={{
               inputMode: 'decimal',
               autoComplete: 'off',
               autoCorrect: 'off',
               spellCheck: false,
+              role: 'spinbutton',
               'aria-label': `${t.value} ${fromUnit?.name ?? ''}`,
               'aria-invalid': Boolean(error),
               'aria-describedby': error ? 'erreur-conversion' : undefined,
+              onKeyDown: (event) => {
+                if (event.key !== 'ArrowUp' && event.key !== 'ArrowDown') return;
+                if (event.ctrlKey || event.metaKey) return;
+
+                const direction = event.key === 'ArrowUp' ? 1 : -1;
+                const next = stepValue(value, direction * stepFor(event));
+                // Une expression ou une saisie invalide ne s'incremente pas :
+                // le curseur garde alors son comportement habituel.
+                if (next === null) return;
+
+                // Les categories a rapport inverse exigent une valeur positive.
+                if (category?.positiveOnly && Number(next.replace(',', '.')) <= 0) {
+                  event.preventDefault();
+                  return;
+                }
+
+                event.preventDefault();
+                onValueChange(next);
+              },
             }}
             fullWidth
             sx={{
