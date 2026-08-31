@@ -1,0 +1,12 @@
+# Normalise les fins de ligne : LF dans le depot, natif dans la copie de travail.
+* text=auto eol=lf
+
+# Fichiers binaires, jamais convertis.
+*.png binary
+*.jpg binary
+*.ico binary
+*.woff binary
+*.woff2 binary
+
+# Le verrou de dependances ne merite pas d'apparaitre dans les diffs.
+package-lock.json linguist-generated=true -diff

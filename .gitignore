@@ -1,0 +1,39 @@
+# Dependances
+node_modules/
+.pnp
+.pnp.js
+
+# Builds
+dist/
+build/
+*.tsbuildinfo
+
+# Environnement
+.env
+.env.local
+.env.*.local
+
+# Journaux
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Cache d'outils
+.vite/
+.cache/
+coverage/
+.eslintcache
+
+# Systeme d'exploitation
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Editeurs
+.vscode/*
+!.vscode/extensions.json
+.idea/
+*.swp

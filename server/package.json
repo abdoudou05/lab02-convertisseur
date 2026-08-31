@@ -1,0 +1,21 @@
+{
+  "name": "@convertisseur/server",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "API de conversion d'unites (Node.js / Express).",
+  "main": "src/index.js",
+  "scripts": {
+    "start": "node src/index.js",
+    "dev": "node --watch src/index.js",
+    "test": "node --test"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "decimal.js": "^10.6.0",
+    "express": "^5.1.0"
+  },
+  "engines": {
+    "node": ">=20.0.0"
+  }
+}
