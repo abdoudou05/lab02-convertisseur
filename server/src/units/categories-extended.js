@@ -14,6 +14,48 @@ const MILE_KM = MILE_M.div(1000);
  */
 export const EXTENDED_CATEGORIES = [
   // -------------------------------------------------------------------------
+  // Placée avant la force : F = m × a, et le kilogramme-force comme la
+  // livre-force reposent déjà sur la pesanteur normale g_n.
+  {
+    id: 'acceleration',
+    icon: 'rocket_launch',
+    name: { fr: 'Accélération', en: 'Acceleration' },
+    blurb: {
+      fr: 'Pesanteur, performances automobiles et gravimétrie.',
+      en: 'Gravity, vehicle performance and gravimetry.',
+    },
+    base: 'm_s2',
+    kind: 'affine',
+    defaultPair: ['g0', 'm_s2'],
+    units: [
+      { id: 'm_s2', symbol: 'm/s²', system: 'si', name: { fr: 'mètre par seconde carrée', en: 'metre per second squared' }, factor: D(1) },
+      {
+        id: 'mGal', symbol: 'mGal', system: 'other',
+        name: { fr: 'milligal', en: 'milligal' }, factor: D('0.00001'),
+        note: { fr: 'Unité usuelle de la gravimétrie et de la géodésie.', en: 'Customary unit in gravimetry and geodesy.' },
+      },
+      {
+        id: 'Gal', symbol: 'Gal', system: 'other',
+        name: { fr: 'gal', en: 'gal' }, factor: D('0.01'),
+        note: { fr: 'Un centimètre par seconde carrée, unité CGS de la sismologie.', en: 'One centimetre per second squared, the CGS unit used in seismology.' },
+      },
+      {
+        id: 'km_h_s', symbol: 'km/h/s', system: 'other',
+        name: { fr: 'kilomètre-heure par seconde', en: 'kilometre per hour per second' }, factor: D(1000).div(3600),
+        note: { fr: 'Gain de vitesse chaque seconde, comme sur un 0 à 100 km/h.', en: 'Speed gained each second, as in a 0 to 100 km/h run.' },
+      },
+      { id: 'in_s2', symbol: 'po/s²', system: 'imperial', name: { fr: 'pouce par seconde carrée', en: 'inch per second squared' }, factor: INCH_M },
+      { id: 'ft_s2', symbol: 'pi/s²', system: 'imperial', name: { fr: 'pied par seconde carrée', en: 'foot per second squared' }, factor: FOOT_M },
+      { id: 'mph_s', symbol: 'mi/h/s', system: 'imperial', name: { fr: 'mille-heure par seconde', en: 'mile per hour per second' }, factor: MILE_M.div(3600) },
+      {
+        id: 'g0', symbol: 'g₀', system: 'other',
+        name: { fr: 'pesanteur normale', en: 'standard gravity' }, factor: G_N,
+        note: { fr: '9,80665 m/s² exactement, par convention (CGPM, 1901).', en: 'Exactly 9.80665 m/s², by convention (CGPM, 1901).' },
+      },
+    ],
+  },
+
+  // -------------------------------------------------------------------------
   {
     id: 'force',
     icon: 'fitness_center',

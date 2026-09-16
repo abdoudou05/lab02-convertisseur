@@ -52,6 +52,10 @@ function readUrlState() {
 export function App({ settings, updateSettings, resetSettings, mode }) {
   const { t, lang, locale } = useI18n();
   const { categories, formatting, status, error: catalogueError, retry } = useCatalogue(lang);
+  const unitCount = useMemo(
+    () => categories.reduce((total, item) => total + item.units.length, 0),
+    [categories],
+  );
 
   const [categoryId, setCategoryId] = useLocalStorage('convertisseur.categorie', 'length');
   const [pair, setPair] = useLocalStorage('convertisseur.paires', {});
@@ -358,6 +362,8 @@ export function App({ settings, updateSettings, resetSettings, mode }) {
         <AppHeader
           mode={mode}
           rulerMotif={settings.rulerMotif}
+          categoryCount={categories.length}
+          unitCount={unitCount}
           onToggleMode={() => updateSettings({ theme: mode === 'dark' ? 'light' : 'dark' })}
           onOpenPalette={() => setPaletteOpen(true)}
           onOpenShortcuts={() => setShortcutsOpen(true)}

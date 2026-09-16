@@ -18,6 +18,7 @@ import BoltIcon from '@mui/icons-material/Bolt';
 import PowerIcon from '@mui/icons-material/Power';
 import StorageIcon from '@mui/icons-material/Storage';
 import ArchitectureIcon from '@mui/icons-material/Architecture';
+import RocketLaunchIcon from '@mui/icons-material/RocketLaunch';
 import FitnessCenterIcon from '@mui/icons-material/FitnessCenter';
 import SettingsIcon from '@mui/icons-material/Settings';
 import GraphicEqIcon from '@mui/icons-material/GraphicEq';
@@ -38,6 +39,7 @@ export const CATEGORY_ICONS = {
   power: PowerIcon,
   storage: StorageIcon,
   architecture: ArchitectureIcon,
+  rocket_launch: RocketLaunchIcon,
   fitness_center: FitnessCenterIcon,
   settings: SettingsIcon,
   graphic_eq: GraphicEqIcon,
