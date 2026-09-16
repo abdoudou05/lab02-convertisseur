@@ -24,7 +24,8 @@ const actionSx = {
 };
 
 export function AppHeader({
-  mode, rulerMotif, onToggleMode, onOpenPalette, onOpenShortcuts, onOpenSettings,
+  mode, rulerMotif, categoryCount = 0, unitCount = 0,
+  onToggleMode, onOpenPalette, onOpenShortcuts, onOpenSettings,
 }) {
   const { t, lang, setLang } = useI18n();
 
@@ -125,7 +126,7 @@ export function AppHeader({
       )}
 
       <Typography sx={{ mt: 1.75, fontSize: '0.875rem', color: 'text.secondary', maxWidth: '52ch' }}>
-        {t.subtitle}
+        {t.subtitle(categoryCount, unitCount)}
       </Typography>
     </Box>
   );
