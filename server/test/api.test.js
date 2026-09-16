@@ -61,6 +61,20 @@ test('GET /api/categories?lang=en bascule la langue', async () => {
   assert.ok(length.units.some((unit) => unit.id === 'ft' && unit.name === 'foot'));
 });
 
+test('la catégorie accélération est exposée par l’API dans les deux langues', async () => {
+  const fr = await get('/api/categories/acceleration?lang=fr');
+  const en = await get('/api/categories/acceleration?lang=en');
+  assert.equal(fr.status, 200);
+  assert.equal(fr.body.category.name, 'Accélération');
+  assert.equal(en.body.category.name, 'Acceleration');
+  assert.ok(fr.body.category.units.some((unit) => unit.id === 'g0' && unit.name === 'pesanteur normale'));
+  assert.ok(en.body.category.units.some((unit) => unit.id === 'g0' && unit.name === 'standard gravity'));
+
+  const { status, body } = await get('/api/convert?category=acceleration&from=g0&to=m_s2&value=2');
+  assert.equal(status, 200);
+  assert.equal(body.result.text, '19.6133');
+});
+
 test('les symboles propres à une langue sont bien localisés', async () => {
   const fr = await get('/api/categories/data?lang=fr');
   const en = await get('/api/categories/data?lang=en');

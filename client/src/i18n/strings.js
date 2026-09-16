@@ -8,7 +8,11 @@ export const STRINGS = {
     locale: 'fr-CA',
     appName: 'Convertisseur',
     tagline: 'Mesures exactes',
-    subtitle: 'Conversions calculées en arithmétique décimale exacte, sur 18 catégories et 163 unités.',
+    // Les totaux viennent du catalogue servi par l'API : ajouter une catégorie
+    // côté serveur met le sous-titre à jour sans retoucher cette chaîne.
+    subtitle: (categories, units) => (categories > 0
+      ? `Conversions calculées en arithmétique décimale exacte, sur ${categories} catégories et ${units} unités.`
+      : 'Conversions calculées en arithmétique décimale exacte.'),
 
     from: 'Depuis',
     to: 'Vers',
@@ -224,7 +228,9 @@ export const STRINGS = {
     locale: 'en-CA',
     appName: 'Converter',
     tagline: 'Exact measures',
-    subtitle: 'Conversions computed with exact decimal arithmetic, across 18 categories and 163 units.',
+    subtitle: (categories, units) => (categories > 0
+      ? `Conversions computed with exact decimal arithmetic, across ${categories} categories and ${units} units.`
+      : 'Conversions computed with exact decimal arithmetic.'),
 
     from: 'From',
     to: 'To',

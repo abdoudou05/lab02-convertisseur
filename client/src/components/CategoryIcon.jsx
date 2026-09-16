@@ -11,6 +11,7 @@ import PowerIcon from '@mui/icons-material/Power';
 import StorageIcon from '@mui/icons-material/Storage';
 import ArchitectureIcon from '@mui/icons-material/Architecture';
 import LocalGasStationIcon from '@mui/icons-material/LocalGasStation';
+import RocketLaunchIcon from '@mui/icons-material/RocketLaunch';
 import CategoryOutlinedIcon from '@mui/icons-material/CategoryOutlined';
 
 /** Correspondance entre le nom d'icône fourni par l'API et le composant MUI. */
@@ -28,6 +29,7 @@ const ICONS = {
   storage: StorageIcon,
   architecture: ArchitectureIcon,
   local_gas_station: LocalGasStationIcon,
+  rocket_launch: RocketLaunchIcon,
 };
 
 export function CategoryIcon({ name, ...props }) {
