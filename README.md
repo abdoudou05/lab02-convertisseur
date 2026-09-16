@@ -4,13 +4,21 @@ Application de conversion d'unités. Backend **Node.js / Express**, frontend **R
 
 Les calculs sont faits en **arithmétique décimale à 50 chiffres** plutôt qu'en virgule flottante binaire : `0,1 + 0,2` donne exactement `0,3`, et `100 °C` donne exactement `212 °F`.
 
-**18 catégories, 163 unités.**
+**19 catégories, 171 unités, 146 tests automatisés.**
 
 ---
 
-## Démarrage
+## Installation et démarrage
+
+### Prérequis
+
+**Node.js 20 ou plus récent** et **Git**. Aucune base de données, aucun service externe, aucune clé d'API.
+
+### Depuis un clone neuf
 
 ```bash
+git clone https://github.com/abdoudou05/lab02-convertisseur.git
+cd lab02-convertisseur
 npm install
 npm run dev
 ```
@@ -35,7 +43,38 @@ npm run test:server   # moteur de conversion et API
 npm run test:client   # utilitaires numériques de l'interface
 ```
 
-140 tests couvrent les facteurs de conversion, les propriétés mathématiques du moteur, l'évaluateur d'expressions, la mise en forme, toutes les routes HTTP et les utilitaires numériques de l'interface.
+146 tests (127 serveur, 19 client) couvrent les facteurs de conversion, les propriétés mathématiques du moteur, l'évaluateur d'expressions, la mise en forme, toutes les routes HTTP, les utilitaires numériques de l'interface et la correspondance entre les catégories du serveur et leurs icônes.
+
+---
+
+## Nouveautés du laboratoire 3
+
+Le laboratoire 3 reprend l'application du laboratoire 2 et l'améliore à deux, en passant par des branches, des pull requests et des revues de code.
+
+| Contribution | Branche | Pull request |
+| --- | --- | --- |
+| Catégorie **Accélération** et sous-titre calculé depuis le catalogue | `feature/categorie-acceleration` | #1 |
+| **Icônes** des cinq catégories qui n'en avaient pas, et test de correspondance | `fix/icones-categories` | #2 |
+| Mise à jour du README | `docs/readme-lab3` | #3 |
+
+### Catégorie Accélération
+
+- 8 unités, base m/s² : m/s², mGal, Gal, km/h/s, po/s², pi/s², mi/h/s et pesanteur normale g₀.
+- Facteurs dérivés des constantes exactes existantes (`INCH_M`, `FOOT_M`, `MILE_M`, `G_N`), jamais recopiés.
+- Le sous-titre de l'en-tête n'est plus codé en dur : le nombre de catégories et d'unités est calculé à partir du catalogue servi par l'API. Ajouter une catégorie côté serveur le met à jour tout seul.
+
+### Icônes des catégories
+
+- Force, Couple, Fréquence, Débit de données et Masse volumique affichaient l'icône générique : leur nom d'icône n'était pas associé côté client. Elles ont maintenant chacune la leur.
+- La table de correspondance est sortie dans `client/src/components/categoryIcons.js`, un module sans JSX, pour être testable par `node --test`.
+- `client/test/category-icons.test.js` échoue si une catégorie du serveur n'a pas d'icône, si une entrée n'est pas un composant React, ou si une icône n'est plus utilisée.
+
+### Versions
+
+| Tag | Contenu |
+| --- | --- |
+| `lab2-final` | Version remise au laboratoire 2 |
+| `lab3-final` | Version finale du laboratoire 3, après fusion des trois pull requests |
 
 ---
 
@@ -43,7 +82,7 @@ npm run test:client   # utilitaires numériques de l'interface
 
 ### Conversion
 
-- **18 catégories** : longueur, masse, volume, température, superficie, vitesse, temps, pression, énergie, puissance, données numériques, angle, force, couple, fréquence, débit de données, masse volumique, consommation de carburant.
+- **19 catégories** : longueur, masse, volume, température, superficie, vitesse, temps, pression, énergie, puissance, données numériques, angle, accélération, force, couple, fréquence, débit de données, masse volumique, consommation de carburant.
 - **Conversion en direct** pendant la frappe, amortie et annulable, sans clignotement du résultat.
 - **Tableau de toutes les unités** : la valeur saisie exprimée simultanément dans chaque unité de la catégorie.
 - **Ordres de grandeur** : une règle logarithmique qui situe chaque unité les unes par rapport aux autres.
@@ -118,7 +157,7 @@ Les touches simples n'agissent que hors des champs de saisie.
 ## Architecture
 
 ```
-Lab02-App/
+lab02-convertisseur/
 ├── server/                      Backend Node.js / Express
 │   ├── src/
 │   │   ├── index.js             Démarrage et arrêt propre
@@ -129,13 +168,13 @@ Lab02-App/
 │   │   └── units/
 │   │       ├── constants.js     Constantes exactes (BIPM, NIST, accord de 1959)
 │   │       ├── definitions.js   12 catégories fondamentales
-│   │       ├── categories-extended.js  6 catégories additionnelles
+│   │       ├── categories-extended.js  7 catégories additionnelles
 │   │       ├── composites.js    Préréglages d'écriture composée
 │   │       ├── convert.js       Moteur de conversion
 │   │       ├── format.js        Notation, arrondi, fractions, composition
 │   │       ├── expression.js    Évaluateur d'expressions
 │   │       └── catalogue.js     Sérialisation localisée
-│   └── test/                    124 tests (node:test)
+│   └── test/                    127 tests (node:test)
 │
 └── client/                      Frontend React + Material UI
     ├── src/
@@ -147,8 +186,8 @@ Lab02-App/
     │   ├── hooks/               Catalogue, conversion, stockage local
     │   ├── i18n/                Chaînes françaises et anglaises
     │   ├── utils/               Mise en forme locale des nombres
-    │   └── components/          14 composants
-    └── test/                    16 tests (node:test)
+    │   └── components/          16 composants et categoryIcons.js
+    └── test/                    19 tests (node:test)
 ```
 
 ### Modèle de données
