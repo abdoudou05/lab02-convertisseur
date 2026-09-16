@@ -58,6 +58,25 @@ test('débit de données, le bit et l’octet ne sont pas confondus', () => {
   assert.equal(text('datarate', 'Mbit_s', 'MB_s', 100), '12.5');
 });
 
+test('accélération, égalités exactes', () => {
+  assert.equal(text('acceleration', 'g0', 'm_s2', 1), '9.80665');
+  assert.equal(text('acceleration', 'm_s2', 'Gal', 1), '100');
+  assert.equal(text('acceleration', 'Gal', 'mGal', 1), '1000');
+  assert.equal(text('acceleration', 'ft_s2', 'in_s2', 1), '12');
+  assert.equal(text('acceleration', 'km_h_s', 'm_s2', 36), '10');
+  // 60 mi/h valent exactement 88 pi/s, donc 15 mi/h/s valent 22 pi/s².
+  assert.equal(text('acceleration', 'mph_s', 'ft_s2', 15), '22');
+});
+
+test('accélération, repères concrets', () => {
+  // La pesanteur normale exprimée en pieds par seconde carrée.
+  assertClose(num('acceleration', 'g0', 'ft_s2', 1), 32.174048556430446, 1e-15, 'g₀ → pi/s²');
+  // Un 0 à 100 km/h en 3 s correspond à une accélération moyenne d'environ 0,94 g.
+  assertClose(num('acceleration', 'km_h_s', 'g0', 100 / 3), 0.9441816786832669, 1e-12, '0 à 100 km/h en 3 s → g₀');
+  // L'anomalie gravimétrique typique se mesure en milligals.
+  assert.equal(text('acceleration', 'mGal', 'm_s2', 1), '0.00001');
+});
+
 test('masse volumique, égalités exactes et références', () => {
   assert.equal(text('density', 'g_cm3', 'kg_m3', 1), '1000');
   assert.equal(text('density', 'kg_L', 'kg_m3', 1), '1000');
