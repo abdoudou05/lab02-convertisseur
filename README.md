@@ -307,7 +307,7 @@ L'application est hébergée sur une VM Linux Azure, derrière NGINX avec un cer
 
 | Élément | Fichier |
 | --- | --- |
-| Provisionnement initial de la VM (cloud-init) | `deploy/cloud-init.yaml` |
+| Provisionnement de la VM (script SSH, et variante cloud-init) | `deploy/provision-vm.sh`, `deploy/cloud-init.yaml` |
 | Service systemd (démarrage automatique) | `deploy/convertisseur.service` |
 | Site NGINX (reverse proxy) | `deploy/nginx-convertisseur.conf` |
 | Script de déploiement exécuté sur la VM | `deploy/remote-deploy.sh` |

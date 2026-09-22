@@ -1,6 +1,8 @@
 #cloud-config
-# Provisionnement initial de la VM (donné à Azure comme « custom data » à la création).
-# Aucun secret ici : seulement la clé PUBLIQUE utilisée par GitHub Actions.
+# Provisionnement initial de la VM (donne a Azure comme custom data a la creation).
+# ASCII seulement : un caractere accentue a fait echouer l'analyse YAML de cloud-init.
+# Equivalent manuel, utilise sur la VM actuelle : deploy/provision-vm.sh
+# Aucun secret ici : seulement la cle PUBLIQUE utilisee par GitHub Actions.
 package_update: true
 package_upgrade: true
 packages:
@@ -20,7 +22,7 @@ users:
       - ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIGAd5+Gu3ArDA0xPcdTsD2hqyhwo6WtK3V7PZxNSy1yJ github-actions-deploy
 
 write_files:
-  # Durcissement SSH : clés seulement, pas de root, seulement les deux comptes prévus.
+  # Durcissement SSH : cles seulement, pas de root, seulement les deux comptes prevus.
   - path: /etc/ssh/sshd_config.d/10-durcissement.conf
     content: |
       PasswordAuthentication no
@@ -28,7 +30,7 @@ write_files:
       PermitRootLogin no
       MaxAuthTries 3
       AllowUsers azureuser deploy
-  # Le compte deploy peut seulement redémarrer le service et lire ses journaux.
+  # Le compte deploy peut seulement redemarrer le service et lire ses journaux.
   - path: /etc/sudoers.d/deploy
     permissions: '0440'
     content: |
