@@ -299,3 +299,26 @@ L'accessibilité est traitée comme une contrainte, pas comme une option : annea
 ## Licence
 
 Travail scolaire réalisé dans le cadre du cours *Exploration de nouvelles technologies*, Cégep de Sherbrooke.
+
+## Déploiement en production (Projet 1, Azure)
+
+L'application est hébergée sur une VM Linux Azure, derrière NGINX avec un certificat Let's Encrypt :
+**<https://convertisseur.abdou.contact>**
+
+| Élément | Fichier |
+| --- | --- |
+| Provisionnement initial de la VM (cloud-init) | `deploy/cloud-init.yaml` |
+| Service systemd (démarrage automatique) | `deploy/convertisseur.service` |
+| Site NGINX (reverse proxy) | `deploy/nginx-convertisseur.conf` |
+| Script de déploiement exécuté sur la VM | `deploy/remote-deploy.sh` |
+| Pipeline GitHub Actions | `.github/workflows/ci-cd.yml` |
+
+À chaque push sur `main`, GitHub Actions installe les dépendances, exécute les tests, construit l'interface, copie l'archive sur la VM par SSH, bascule vers la nouvelle version et vérifie que `https://convertisseur.abdou.contact/health` annonce bien le nouveau commit. En cas d'échec, la VM revient automatiquement à la version précédente.
+
+Secrets GitHub utilisés : `VM_HOST`, `VM_USER`, `VM_SSH_KEY`, `VM_KNOWN_HOSTS`. Aucune clé privée n'est dans le dépôt.
+
+### Observabilité
+
+- `GET /health` (et `/api/health`) : statut, révision déployée, uptime, mémoire, horodatage.
+- Journal applicatif : une ligne par requête (horodatage, niveau, méthode, chemin, statut, durée, IP réelle du client), lisible avec `journalctl -u convertisseur -f`.
+- Vérification rapide de disponibilité : `curl -fsS https://convertisseur.abdou.contact/health` (code de sortie 0 = en ligne).

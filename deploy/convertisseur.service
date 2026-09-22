@@ -1,0 +1,29 @@
+# /etc/systemd/system/convertisseur.service
+[Unit]
+Description=Convertisseur d'unites (API Node.js + interface React)
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=deploy
+Group=deploy
+WorkingDirectory=/opt/convertisseur/current
+ExecStart=/usr/bin/node server/src/index.js
+Environment=NODE_ENV=production
+Environment=HOST=127.0.0.1
+Environment=PORT=4000
+Restart=always
+RestartSec=3
+# Journaux : stdout/stderr vers journald (journalctl -u convertisseur)
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=convertisseur
+# Durcissement
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=full
+ProtectHome=true
+
+[Install]
+WantedBy=multi-user.target
