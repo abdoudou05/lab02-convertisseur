@@ -5,6 +5,7 @@ import {
   serializeCatalogue, serializeCategory, normalizeLanguage, formattingOptions,
 } from '../units/catalogue.js';
 import { warningMessage } from '../messages.js';
+import { healthReport } from '../health.js';
 
 const router = Router();
 
@@ -51,12 +52,7 @@ function readExtraUnits(raw) {
 // Sonde de santé, utilisée par le client pour signaler une API hors service.
 // ---------------------------------------------------------------------------
 router.get('/health', (req, res) => {
-  res.json({
-    status: 'ok',
-    uptime: Math.round(process.uptime()),
-    categories: CATEGORIES.length,
-    units: CATEGORIES.reduce((total, category) => total + category.units.length, 0),
-  });
+  res.set('Cache-Control', 'no-store').json(healthReport());
 });
 
 // ---------------------------------------------------------------------------

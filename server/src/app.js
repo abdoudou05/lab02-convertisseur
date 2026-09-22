@@ -7,6 +7,8 @@ import cors from 'cors';
 
 import apiRoutes from './routes/index.js';
 import { notFound, errorHandler } from './middleware/errorHandler.js';
+import { requestLogger } from './middleware/requestLogger.js';
+import { healthReport } from './health.js';
 
 const here = path.dirname(fileURLToPath(import.meta.url));
 /** Bundle du client, présent seulement après `npm run build`. */
@@ -16,8 +18,16 @@ export function createApp() {
   const app = express();
 
   app.disable('x-powered-by');
+  // Derrière NGINX : req.ip = adresse réelle du client (X-Forwarded-For).
+  app.set('trust proxy', 'loopback');
+  app.use(requestLogger);
   app.use(cors());
   app.use(express.json({ limit: '16kb' }));
+
+  // Sonde de santé pour la surveillance externe (UptimeRobot, curl, pipeline).
+  app.get('/health', (req, res) => {
+    res.set('Cache-Control', 'no-store').json(healthReport());
+  });
 
   app.use('/api', apiRoutes);
 

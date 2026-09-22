@@ -18,5 +18,9 @@ const shutdown = (signal) => {
   server.close(() => process.exit(0));
 };
 
+process.on('unhandledRejection', (reason) => {
+  console.error(`${new Date().toISOString()} ERROR promesse rejetée non gérée :`, reason);
+});
+
 process.on('SIGINT', () => shutdown('SIGINT'));
 process.on('SIGTERM', () => shutdown('SIGTERM'));

@@ -1,0 +1,113 @@
+name: CI/CD - Azure VM
+
+# Pull request vers main : tests et build seulement.
+# Push vers main (ex. fusion d'une PR) : tests, build, puis déploiement sur la VM Azure.
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+# Un seul déploiement à la fois, sans annuler celui en cours.
+concurrency:
+  group: ${{ github.event_name == 'pull_request' && format('ci-{0}', github.ref) || 'deploy-production' }}
+  cancel-in-progress: false
+
+env:
+  NODE_VERSION: '22'
+  APP_URL: https://convertisseur.abdou.contact
+
+jobs:
+  test-build:
+    name: Tests et build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+
+      - name: Installer les dépendances
+        run: npm ci
+
+      - name: Exécuter les tests (serveur + client)
+        run: npm test
+
+      - name: Construire l'interface React
+        run: npm run build
+
+      - name: Préparer l'archive de déploiement
+        run: |
+          echo "$GITHUB_SHA" > REVISION
+          tar -czf release.tgz REVISION package.json package-lock.json \
+            server client/package.json client/dist deploy/remote-deploy.sh
+          ls -lh release.tgz
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: release
+          path: release.tgz
+          retention-days: 7
+
+  deploy:
+    name: Déploiement sur la VM Azure
+    needs: test-build
+    if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    environment:
+      name: production
+      url: ${{ env.APP_URL }}
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: release
+
+      - name: Configurer la clé SSH (secrets GitHub)
+        env:
+          VM_SSH_KEY: ${{ secrets.VM_SSH_KEY }}
+          VM_KNOWN_HOSTS: ${{ secrets.VM_KNOWN_HOSTS }}
+        run: |
+          install -m 700 -d ~/.ssh
+          printf '%s\n' "$VM_SSH_KEY" > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
+          printf '%s\n' "$VM_KNOWN_HOSTS" > ~/.ssh/known_hosts
+
+      - name: Copier et installer la nouvelle version
+        env:
+          VM_HOST: ${{ secrets.VM_HOST }}
+          VM_USER: ${{ secrets.VM_USER }}
+        run: |
+          SSH="ssh -i ~/.ssh/deploy_key -o StrictHostKeyChecking=yes -o ConnectTimeout=15"
+          scp -i ~/.ssh/deploy_key -o StrictHostKeyChecking=yes release.tgz "$VM_USER@$VM_HOST:/tmp/release-$GITHUB_SHA.tgz"
+          $SSH "$VM_USER@$VM_HOST" \
+            "tar -xzOf /tmp/release-$GITHUB_SHA.tgz deploy/remote-deploy.sh | bash -s -- $GITHUB_SHA /tmp/release-$GITHUB_SHA.tgz"
+
+      - name: Vérifier la version en ligne (HTTPS public)
+        run: |
+          for i in $(seq 1 10); do
+            BODY=$(curl -fsS --max-time 10 "$APP_URL/health" || true)
+            if echo "$BODY" | grep -q "\"revision\":\"$GITHUB_SHA\""; then
+              echo "Déploiement confirmé : $BODY"
+              {
+                echo "### Déploiement réussi"
+                echo ""
+                echo "- URL : $APP_URL"
+                echo "- Révision : \`$GITHUB_SHA\`"
+                echo "- Réponse /health : \`$BODY\`"
+              } >> "$GITHUB_STEP_SUMMARY"
+              exit 0
+            fi
+            sleep 3
+          done
+          echo "::error::La révision $GITHUB_SHA ne répond pas sur $APP_URL/health"
+          exit 1
+
+      - name: Nettoyer la clé SSH
+        if: always()
+        run: rm -f ~/.ssh/deploy_key
